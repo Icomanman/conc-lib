@@ -16,7 +16,7 @@ public:
     double poisonRatio();
     double modulus();
     double thermalExpansion();
-    char *getName();
+    const char *getName();
 
 protected:
     char *name;

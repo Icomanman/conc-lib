@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "core/Material.h"
 #include "core/Material.h"
 
@@ -12,8 +13,9 @@ Material::~Material()
 {
 }
 
-char *Material::getName()
+const char *Material::getName()
 {
+    printf("> From Material: %s", name);
     return name;
 }
 
@@ -21,6 +23,7 @@ Concrete::Concrete(const char *name, double poissonRatio, double youngModulus, d
     : Material(name, youngModulus, thermalExpansion, poissonRatio),
       _fc(fc)
 {
+  printf("> Passed named via constructor: %s\n", name);
 }
 
 Steel::Steel(const char *name, double poissonRatio, double youngModulus, double thermalExpansion, double fy)
