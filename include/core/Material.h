@@ -19,7 +19,7 @@ public:
     const char *getName();
 
 protected:
-    char *name;
+    const char *name;
     double poisson;
     double E;
     double cThExp;
@@ -30,7 +30,7 @@ class Concrete : public Material
 public:
     Concrete(const char *name, double poissonRatio, double youngModulus, double thermalExpansion, double fc);
 
-    double fc();
+    const double fc();
 
 private:
     double _fc;

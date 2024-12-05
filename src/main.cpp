@@ -12,8 +12,7 @@ int main(void)
     Steel steel("G400", steelProps.E, steelProps.cThExp, steelProps.poisson, 400.0);
 
     Section section(props, concrete, steel);
-    // concrete.getName();
-    printf("%c", 1);
-    // std::cout << "Section name: " << concrete.getName() << std::endl;
+    printf("%f\n", concrete.fc());
+    std::cout << "Section name: " << concrete.getName() << std::endl;
     return 1;
 }
