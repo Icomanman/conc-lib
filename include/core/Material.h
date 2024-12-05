@@ -2,47 +2,64 @@
 
 struct MaterialProps
 {
-    double E;
+    float E;
     double cThExp;
-    double poisson;
+    float poisson;
+};
+
+struct ConcreteProps
+{
+    int t0 = 28;                     // 28 days
+    float shrinkageStrain = 0.00025; // 250 microstrain
+    float creepCoefficient = 1.5;
+    float T1 = 20; // 20 degrees Celsius
+    float T2 = 30; // 30 degrees Celsius
+    float R1 = 0.5;
+    float R2 = 0.5;
 };
 
 class Material
 {
 public:
-    Material(const char *name, double youngModulus, double thermalExpansion, double poissonRatio);
+    Material(const char *name, float youngModulus, double thermalExpansion, float poissonRatio);
     virtual ~Material();
 
-    double poisonRatio();
-    double modulus();
+    float poisonRatio();
+    float modulus();
     double thermalExpansion();
     const char *getName();
 
 protected:
     const char *name;
-    double poisson;
-    double E;
+    float poisson;
+    float E;
     double cThExp;
 };
 
 class Concrete : public Material
 {
 public:
-    Concrete(const char *name, double poissonRatio, double youngModulus, double thermalExpansion, double fc);
+    Concrete(const char *name, float youngModulus, double thermalExpansion, float poissonRatio, float fc);
 
-    const double fc();
+    const float fc();
+    const ConcreteProps misc();
+
+    void setMisc(const ConcreteProps &props);
 
 private:
-    double _fc;
+    float _fc;
+    ConcreteProps _misc;
 };
 
 class Steel : public Material
 {
 public:
-    Steel(const char *name, double poissonRatio, double youngModulus, double thermalExpansion, double fy);
+    Steel(const char *name, float youngModulus, double thermalExpansion, float poissonRatio, float fy, float fu = 600);
 
-    double fy();
+    const float fy();
+    const float fu();
 
 private:
-    double _fy;
+    float _fy;
+    float _fu;
 };
