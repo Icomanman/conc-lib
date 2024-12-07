@@ -22,7 +22,6 @@ class Material
 {
 public:
     Material(const char *name, float youngModulus, double thermalExpansion, float poissonRatio);
-    virtual ~Material();
 
     float poisonRatio();
     float modulus();

@@ -10,15 +10,6 @@ Material::Material(const char *name, float youngModulus, double thermalExpansion
 {
 }
 
-Material::~Material()
-{
-}
-
-const char *Material::getName()
-{
-    return name;
-}
-
 Concrete::Concrete(const char *name, float youngModulus, double thermalExpansion, float poissonRatio, float fc)
     : Material(name, youngModulus, thermalExpansion, poissonRatio),
       _fc(fc)

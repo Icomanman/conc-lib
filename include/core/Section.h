@@ -3,20 +3,37 @@
 
 struct SectionProps
 {
-    double b;
-    double h;
-    double cover;
+    float b = 300.0;
+    float h = 500.0;
+    float cover = 0.0;
+    float Ast = 0.0;
+    float Asb = 0.0;
 };
 
 class Section
 {
 public:
     Section(SectionProps &props, Concrete &concrete, Steel &steel);
-    ~Section();
-    // void setSectionName(const char *name);
-    // void setSectionSize(int size);
-    // void setSectionData(const char *data);
-    // const char *getSectionName();
-    // int getSectionSize();
-    // const char *getSectionData();
+
+    bool compressionTop();
+    SectionProps &props();
+    Concrete &concrete();
+    Steel &steel();
+
+    void updateCompressionTop(bool compressionTop);
+    void updateProps(SectionProps &props);
+
+private:
+    bool _compressionTop;
+    SectionProps _props;
+    Concrete _concrete;
+    Steel _steel;
+};
+
+class ConcreteSection : public Section
+{
+};
+
+class SteelSection : public Section
+{
 };
