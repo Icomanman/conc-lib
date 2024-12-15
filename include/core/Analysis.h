@@ -14,7 +14,7 @@ class Uncracked : public Analysis
 {
 public:
     Uncracked(); // default constructor
-    Uncracked &run(const ConcreteSection &section, float M, float N);
+    Uncracked &run(const ConcreteSection &propSet, float M, float N);
 };
 
 class Cracked : public Analysis

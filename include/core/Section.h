@@ -22,26 +22,14 @@ class ConcreteSection : public Section
 {
 
 public:
-    struct properties : sectionProps
-    {
-        float Ast = 0.0;
-        float Asb = 0.0;
-        float Ad = 0.0;
-        float b = 0.0;
-        float db = 0.0;
-        float dt = 0.0;
-        float Ec = 0.0;
-        float Es = 0.0;
-        float h = 0.0;
-    };
     const std::map<const char *, rebar> state;
-    ConcreteSection(const Concrete &concrete, const properties &props, const std::map<const char *, rebar> &rebars);
+    ConcreteSection(const Concrete &concrete, const props &propSet, const std::map<const char *, Rebar *> &rebars);
 
     const Uncracked &uncracked();
     const Cracked &cracked();
     const Concrete &concrete();
-    const properties props();
-    const std::map<const char *, rebar> rebars();
+    const props getProps();
+    const std::map<const char *, Rebar *> rebars();
     const char *state();
 
     float calculateRf();
@@ -52,8 +40,8 @@ private:
     Cracked cracked_;
 
     Concrete concrete_;
-    properties props_;
-    std::map<const char *, rebar> rebars_;
+    props props_;
+    std::map<const char *, Rebar *> rebars_;
     float d_;
     float n_;
     float n1_;

@@ -19,9 +19,9 @@ public:
     static const Steel defaultSteel;
     static const int defaultDiameters[];
 
-    Rebar(const Steel &steel = defaultSteel, float diameter, float spacing, char *layer = nullptr);
+    Rebar(const Steel &steel, float diameter, float spacing, char *layer = nullptr);
 
-    const Steel &steel;
+    const Steel &steel = defaultSteel;
     float diameter;
     float spacing;
 

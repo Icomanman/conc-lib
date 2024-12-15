@@ -1,6 +1,7 @@
 #include "core/Analysis.h"
-#include "core/Section.h"
 #include "core/Material.h"
+#include "core/Properties.h"
+#include "core/Section.h"
 #include <map>
 
 const bool Section::compressionTop()
@@ -13,8 +14,8 @@ void Section::updateCompressionTop(bool compressionTop)
     compressionTop_ = compressionTop;
 };
 
-ConcreteSection::ConcreteSection(const Concrete &concrete, const properties &props, const std::map<const char *, rebar> &rebars)
-    : concrete_(concrete), props_(props), rebars_(rebars) {
+ConcreteSection::ConcreteSection(const Concrete &concrete, const props &propSet, const std::map<const char *, Rebar *> &rebars)
+    : concrete_(concrete), props_(propSet), rebars_(rebars) {
       };
 
 const Uncracked &ConcreteSection::uncracked()
@@ -22,22 +23,22 @@ const Uncracked &ConcreteSection::uncracked()
     return uncracked_;
 };
 
-// const Cracked *ConcreteSection::cracked()
-// {
-//     return cracked_;
-// };
+const Cracked &ConcreteSection::cracked()
+{
+    return cracked_;
+};
 
 const Concrete &ConcreteSection::concrete()
 {
     return concrete_;
 };
 
-const ConcreteSection::properties ConcreteSection::props()
+const props ConcreteSection::getProps()
 {
     return props_;
 };
 
-const std::map<const char *, rebar> ConcreteSection::rebars()
+const std::map<const char *, Rebar *> ConcreteSection::rebars()
 {
     return rebars_;
 };
