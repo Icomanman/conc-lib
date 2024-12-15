@@ -1,6 +1,16 @@
 #pragma once
 #include "core/Material.h"
 
+struct rebar
+{
+    Material &material;
+
+    float layerDistance;
+    float diameter;
+    char *name;
+    float spacing;
+};
+
 class Rebar
 {
 
