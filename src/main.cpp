@@ -9,7 +9,7 @@ int main(void)
 {
     MaterialProps concreteProps = {25000, 0.00001, 0.2};
     MaterialProps steelProps = {200000, 0.00001, 0.2};
-    sectionProps props = {350, 500};
+    props propSet = {350, 500};
 
     const Concrete fc27("fc27", 27.0, concreteProps.E, concreteProps.cThExp, concreteProps.poisson);
     const Steel fy400("fy400", 400.0, steelProps.E, steelProps.cThExp, steelProps.poisson);
@@ -18,7 +18,9 @@ int main(void)
     std::map<const char *, Rebar *> rebars;
     rebars["bottom"] = &typicalBar;
 
-    // ConcreteSection section(fc27, props, rebars);
+    ConcreteSection section(fc27, propSet, rebars);
+
+    printf("Section state: %s\n", section.state());
 
     return 1;
 }

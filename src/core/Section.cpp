@@ -1,8 +1,12 @@
 #include "core/Analysis.h"
 #include "core/Material.h"
 #include "core/Properties.h"
+#include "core/Rebar.h"
 #include "core/Section.h"
 #include <map>
+
+Section::Section() {
+};
 
 const bool Section::compressionTop()
 {
@@ -43,11 +47,15 @@ const std::map<const char *, Rebar *> ConcreteSection::rebars()
     return rebars_;
 };
 
+const char *ConcreteSection::state()
+{
+    return state_;
+};
+
 void ConcreteSection::updateState(float M, float N) {
     // TODO
     // run Uncracked Analysis
     // Check status and stresses
-
 };
 
 float ConcreteSection::calculateRf()

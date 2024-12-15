@@ -9,7 +9,6 @@ class Section
 {
 public:
     Section();
-    virtual ~Section();
 
     const bool compressionTop();
     void updateCompressionTop(bool compressionTop);
@@ -22,7 +21,6 @@ class ConcreteSection : public Section
 {
 
 public:
-    const std::map<const char *, rebar> state;
     ConcreteSection(const Concrete &concrete, const props &propSet, const std::map<const char *, Rebar *> &rebars);
 
     const Uncracked &uncracked();
@@ -42,6 +40,8 @@ private:
     Concrete concrete_;
     props props_;
     std::map<const char *, Rebar *> rebars_;
+
+    const char *state_ = "uninitialized";
     float d_;
     float n_;
     float n1_;

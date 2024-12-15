@@ -10,7 +10,9 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # Add library target
 add_library(ConcreteLib 
+    src/core/Analysis.cpp
     src/core/Material.cpp
+    src/core/Rebar.cpp
     src/core/Section.cpp
 )
 

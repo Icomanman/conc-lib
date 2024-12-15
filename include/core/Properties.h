@@ -1,5 +1,5 @@
 #pragma once
-#include "core/Material.h"
+#include "Material.h"
 
 struct sectionProps
 {

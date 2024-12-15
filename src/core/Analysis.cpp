@@ -1,14 +1,23 @@
 #include <iostream>
 #include "core/Analysis.h"
-#include "core/Material.h"
-#include "core/Section.h"
+#include "core/Properties.h"
 
-Uncracked &Uncracked::run(const ConcreteSection &section, float M, float N)
-{
-    printf("> run: Uncracked\n");
+Analysis::Analysis() {
 };
 
-Cracked &Cracked::run(const ConcreteSection &section, float M, float N) {
+Uncracked::Uncracked() {
+};
 
-    // TODO
+Uncracked &Uncracked::run(const props &propSet, float M, float N)
+{
+    printf("> run: Uncracked\n");
+    return *this;
+};
+
+Cracked::Cracked() {
+};
+
+Cracked &Cracked::run(const props &propSet, float M, float N)
+{
+    return *this;
 };
