@@ -8,15 +8,15 @@
 Section::Section() {
 };
 
-const bool Section::compressionTop()
-{
-    return compressionTop_;
-};
+// const bool Section::compressionTop()
+// {
+//     return compressionTop_;
+// };
 
-void Section::updateCompressionTop(bool compressionTop)
-{
-    compressionTop_ = compressionTop;
-};
+// void Section::updateCompressionTop(bool compressionTop)
+// {
+//     compressionTop_ = compressionTop;
+// };
 
 ConcreteSection::ConcreteSection(const Concrete &concrete, const props &propSet, const std::map<const char *, Rebar *> &rebars)
     : concrete_(concrete), props_(propSet), rebars_(rebars) {

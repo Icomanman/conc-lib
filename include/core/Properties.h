@@ -18,4 +18,21 @@ struct props : sectionProps
     float Ec = 0.0;
     float Es = 0.0;
     float h = 0.0;
+
+    float ne() const
+    {
+        if (Es == 0.0)
+        {
+            return 0.0;
+        }
+        return Es / Ec;
+    }
+    float n1() const
+    {
+        if (Es == 0.0)
+        {
+            return 0.0;
+        }
+        return (Es / Ec) - 1;
+    };
 };

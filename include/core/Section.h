@@ -10,11 +10,11 @@ class Section
 public:
     Section();
 
-    const bool compressionTop();
-    void updateCompressionTop(bool compressionTop);
+    // const bool compressionTop();
+    // void updateCompressionTop(bool compressionTop);
 
-private:
-    bool compressionTop_;
+    // private:
+    //     bool compressionTop_;
 };
 
 class ConcreteSection : public Section
