@@ -16,10 +16,12 @@ void Analysis::updateCompressionTop(bool compressionTop)
     compressionTop_ = compressionTop;
 };
 
-Uncracked::Uncracked() {
+Uncracked::Uncracked()
+{
+    static const char *Stype = "Compressive_only";
 };
 
-Uncracked &Uncracked::run(const props &propSet, float M, float N)
+Uncracked &Uncracked::run(const props &propSet, const float M, const float N)
 {
     bool fgExtremeCompTop;
     float Acg, A1, B1, Y1, y01, yb1, I1, Mcg1, ys1, fcb1, fct1, fsb1, fst1, et1, eb1, g1, C1;
@@ -84,10 +86,192 @@ Uncracked &Uncracked::run(const props &propSet, float M, float N)
     return *this;
 };
 
-Cracked::Cracked() {
+Cracked::Cracked()
+{
+
+    static const char *Stype = "Cracked_with_compression";
 };
 
-Cracked &Cracked::run(const props &propSet, float M, float N)
+Cracked &Cracked::run(const props &propSet, const float M, const float N, const bool compressionTop)
 {
+    float Acg2, A2, B2, Y2, y02, yna2, I2, Mcg2, ys2, fna2, fct2, fcb2, fsb2, fst2, est2, esb2, g2, eb2, et2, fsMax2;
+    float d = compressionTop ? (propSet.h - propSet.db) : (propSet.h - propSet.dt);
+
+    double nt = 0.0, nb = 0.0; // use for local modular ratio for top and bottom rebar
+    // find C2 by binary iteration
+    double C2start = propSet.h / 2; // for binary search, take half of search area
+    double C2inc = C2start / 2;     // next increment
+    double C2 = C2start;
+
+    PureTension *pt = nullptr;
+    if (compressionTop)
+    { // compression in top fibre. C defined from top
+        for (int i = 0; i < 21; ++i)
+        {
+            // modular ratio for transformed area to be adjusted (deduction of concrete area)
+            if (C2 < propSet.dt)
+            { // check if top rebar is in cracked zone. adjust modular ratio
+                nt = propSet.Es / propSet.Ec;
+                nb = nt;
+            }
+            else
+            {
+                nt = propSet.Es / propSet.Ec - 1; // top rebar in compression zone
+                if (C2 < d)
+                {
+                    nb = propSet.Es / propSet.Ec; // bottom rebar in tension zone
+                }
+                else
+                {
+                    nb = propSet.Es / propSet.Ec - 1; // bottom in compression zone
+                }
+            }
+
+            // much of this calcs can be refactored into helper function
+            Acg2 = propSet.b * C2;
+            A2 = Acg2 - propSet.Ad + nb * propSet.Asb + nt * propSet.Ast;
+            B2 = Acg2 * C2 / 2 - propSet.Ad * propSet.h / 4 + nb * propSet.Asb * propSet.d + nt * propSet.Ast * propSet.dt;
+            Y2 = B2 / A2;
+            y02 = propSet.h / 2 - Y2;
+            yna2 = C2 - Y2;
+            I2 = propSet.b * pow(Y2, 3) / 3 + propSet.b * pow(yna2, 3) / 3 + nt * propSet.Ast * pow(Y2 - propSet.dt, 2) + nb * propSet.Asb * pow(propSet.d - Y2, 2) - propSet.Ad * pow(Y2 - propSet.h / 4, 2);
+            Mcg2 = M + N * (y02 / 1000);
+            fna2 = (N * 1000) / A2 + (Mcg2 * 1e6) / I2 * yna2;
+            if (fna2 > 0)
+                C2 = C2 - C2inc;
+        }
+        {
+            C2 = C2 + C2inc;
+        }
+        C2inc = C2inc / 2;
+
+        fct2 = N * 1000 / A2 - Mcg2 * 1e6 / I2 * Y2; // MPa, concrete stress at top fibre
+        fcb2 = 0;                                    // cracked
+        ys2 = d - Y2;
+        // MPa, stress in bottom rebar
+        fsb2 = propSet.ne() * (N * 1000 / A2 + Mcg2 * 1e6 / I2 * ys2);
+        // MPa, stress in top rebar (tensile or compressive)
+        fst2 = propSet.ne() * (N * 1000 / A2 - Mcg2 * 1e6 / I2 * (Y2 - propSet.dt));
+        // strain at top rebar
+        est2 = fst2 / (propSet.Es * 1e3);
+        // strain at bottom rebar
+        esb2 = fsb2 / (propSet.Es * 1e3);
+        // slope of strain diagram: delta strain over dist between rebar
+        g2 = (esb2 - est2) / (d - propSet.dt);
+        eb2 = esb2 + g2 * propSet.db; // apparent surface strain, bottom
+        et2 = est2 - g2 * propSet.dt; // apparent surface strain, top
+        fsMax2 = fsb2;
+        if (abs(fna2) > 0.00001)
+        { // check for non-convergence
+            PureTension pt(propSet, M, N, compressionTop);
+        }
+    }
+    else
+    {
+        // compression in bottom fibre, C defined from bottom
+        float d_bott = propSet.h - propSet.dt; // bottom up
+        for (int i = 0; i < 21; ++i)
+        {
+            // modular ratio for transformed area to be adjusted (deduction of concrete area)
+            if (C2 < propSet.db)
+            { // check if bottom rebar is in cracked zone. adjust modular ratio
+                nb = propSet.Es / propSet.Ec;
+                nt = nt;
+            }
+            else
+            {
+                nb = propSet.Es / propSet.Ec - 1; // bottom rebar in compression zone
+                if (C2 < d_bott)
+                {
+                    nt = propSet.Es / propSet.Ec; // top rebar in tension zone
+                }
+                else
+                {
+                    nt = propSet.Es / propSet.Ec - 1; // top in compression zone
+                }
+            }
+
+            this->Acg2 = propSet.b * C2;
+            this->A2 = this->Acg2 + nb * propSet.Asb + nt * propSet.Ast;
+            this->B2 = this->Acg2 * C2 / 2 + nb * propSet.Asb * propSet.db + nt * propSet.Ast * d_bott; // ref bottom
+            this->Y2 = this->B2 / this->A2;                                                             // dist from bottom to CG
+            this->y02 = propSet.h / 2 - this->Y2;
+            this->yna2 = C2 - this->Y2;
+            this->I2 = propSet.b * pow(this->Y2, 3) / 3 + propSet.b * pow(this->yna2, 3) / 3 + nt * propSet.Ast * pow(d_bott - this->Y2, 2) + nb * propSet.Asb * pow(this->Y2 - propSet.db, 2);
+            this->Mcg2 = M - N * (this->y02 / 1000);
+            this->fna2 = (N * 1000) / this->A2 + (-this->Mcg2 * 1e6) / this->I2 * this->yna2;
+            if (this->fna2 > 0)
+            {
+                C2 = C2 - C2inc;
+            }
+            else
+            {
+                C2 = C2 + C2inc;
+            }
+
+            C2inc = C2inc / 2;
+        }
+
+        this->C2 = C2;
+        // MPa, concrete stress at bottom fibre
+        this->fcb2 = N * 1000 / this->A2 + this->Mcg2 * 1e6 / this->I2 * this->Y2;
+        this->fct2 = 0;
+        this->ys2 = d_bott - this->Y2;
+
+        // MPa, stress in top rebar (tensile)
+        this->fst2 = propSet.ne * (N * 1000 / this->A2 - this->Mcg2 * 1e6 / this->I2 * this->ys2);
+        // MPa, stress in bottom rebar (tensile or compressive)
+        this->fsb2 = propSet.ne * (N * 1000 / this->A2 + this->Mcg2 * 1e6 / this->I2 * (this->Y2 - propSet.db));
+        // strain at top rebar
+        this->est2 = this->fst2 / (propSet.Es * 1e3);
+        // strain at bottom rebar
+        this->esb2 = this->fsb2 / (propSet.Es * 1e3);
+        // slope of strain diagram: delta strain over dist between rebar
+        this->g2 = (this->esb2 - this->est2) / (propSet.d - propSet.db);
+        this->et2 = this->est2 - this->g2 * propSet.dt; // apparent surface strain, top
+        this->eb2 = this->esb2 + this->g2 * propSet.db; // apparent surface strain, bottom
+        // check for non-convergence
+        this->fsMax2 = this->fst2;
+        if (abs(this->fna2) > 0.0001 || propSet.fgMonoBarTie)
+        {
+            state3 = new State3(M, N, propSet);
+        }
+    }
+
+    if (pt)
+    {
+        this->C = pt->C;
+        this->fctop = pt->fctop;
+        this->fcbot = pt->fcbot;
+        this->fstop = pt->fstop;
+        this->fsbot = pt->fsbot;
+        this->etop = pt->etop;
+        this->ebot = pt->ebot;
+        this->g = pt->g;
+        this->Stype = PureTension::Stype;
+    }
+    else
+    {
+        this->C = C2;
+        this->fctop = this->fct2;
+        this->fcbot = this->fcb2;
+        this->fstop = this->fst2;
+        this->fsbot = this->fsb2;
+        this->etop = this->et2;
+        this->ebot = this->eb2;
+        this->g = this->g2;
+        this->Stype = "Cracked";
+    }
     return *this;
 };
+
+PureTension::PureTension()
+{
+    static const char *Stype = "Tensile_only";
+};
+
+PureTension &PureTension::run(const props &propSet, const float M, const float N, const bool compressionTop)
+{
+    // TODO
+    return *this;
+}

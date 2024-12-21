@@ -10,14 +10,16 @@ public:
     void updateCompressionTop(bool compressionTop);
 
 private:
-    bool compressionTop_;
+    bool compressionTop_ = true;
 };
 
 class Uncracked : public Analysis
 {
+
 public:
+    static const char *Stype;
     Uncracked(); // default constructor
-    Uncracked &run(const props &propSet, float M, float N);
+    Uncracked &run(const props &propSet, const float M, const float N);
 
     double C;
     double fctop;
@@ -27,12 +29,39 @@ public:
     double etop;
     double ebot;
     double g;
-    char *Stype;
 };
 
 class Cracked : public Analysis
 {
+
 public:
+    static const char *Stype;
     Cracked(); // default constructor
-    Cracked &run(const props &propSet, float M, float N);
+    Cracked &run(const props &propSet, const float M, const float N, const bool compressionTop);
+
+    double C;
+    double fctop;
+    double fcbot;
+    double fstop;
+    double fsbot;
+    double etop;
+    double ebot;
+    double g;
+};
+
+class PureTension : public Analysis
+{
+
+public:
+    static const char *Stype;
+    PureTension(const props &propSet, const float M, const float N, const bool compressionTop);
+
+    double C;
+    double fctop;
+    double fcbot;
+    double fstop;
+    double fsbot;
+    double etop;
+    double ebot;
+    double g;
 };

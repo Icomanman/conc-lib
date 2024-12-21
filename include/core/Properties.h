@@ -9,6 +9,7 @@ struct sectionProps
 
 struct props : sectionProps
 {
+    bool compressionTop = false;
     float Ast = 0.0;
     float Asb = 0.0;
     float Ad = 0.0;
