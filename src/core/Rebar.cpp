@@ -2,7 +2,7 @@
 #include "core/Rebar.h"
 
 // static members
-const Steel Rebar::defaultSteel = Steel("default", 414.0, 200.0, 414.0, 0.17);
+const Steel Rebar::defaultSteel(414.0, "default", 200.0, 414.0, 0.17);
 const int Rebar::defaultDiameters[] = {6, 8, 10, 12, 16, 20, 25, 32};
 
 Rebar::Rebar(const Steel &steel, float diameter, float spacing, const char *layer)

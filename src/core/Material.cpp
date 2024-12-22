@@ -1,18 +1,38 @@
 #include <stdio.h>
+
 #include "core/Material.h"
 #include "core/Material.h"
 
-Material::Material(const char *name, float youngModulus, float thermalExpansion, float poissonRatio)
-    : name(name),
-      E(youngModulus),
-      cThExp(thermalExpansion),
-      poisson(poissonRatio)
+Material::Material(const char *name, float youngsModulus, float thermalExpansion, float poissonRatio)
+    : name_(name),
+      E_(youngsModulus),
+      cThExp_(thermalExpansion),
+      poisson_(poissonRatio)
 {
 }
 
-Concrete::Concrete(const char *name, float fc, float youngModulus, float thermalExpansion, float poissonRatio)
-    : Material(name, youngModulus, thermalExpansion, poissonRatio),
-      fc_(fc)
+const float Material::modulus()
+{
+    return E_;
+}
+
+const float Material::thermalExpansion()
+{
+    return cThExp_;
+}
+
+const float Material::poisonRatio()
+{
+    return poisson_;
+}
+
+const char *Material::getName()
+{
+    return name_;
+}
+
+Concrete::Concrete(const float fc, const char *name, const float youngsModulus, const float thermalExpansion, const float poissonRatio)
+    : fc_(fc), Material(name, youngsModulus, thermalExpansion, poissonRatio)
 {
 }
 
@@ -24,14 +44,16 @@ void Concrete::setMisc(const ConcreteProps &props)
 const ConcreteProps Concrete::misc()
 {
     return misc_;
-}
+};
+
 const float Concrete::fc()
 {
     return fc_;
 }
 
-Steel::Steel(const char *name, float fy, float youngModulus, float thermalExpansion, float poissonRatio, float fu)
-    : Material(name, youngModulus, thermalExpansion, poissonRatio),
-      fy_(fy)
+Steel::Steel(const float fy, const char *name, const float youngsModulus, const float thermalExpansion, const float poissonRatio, const float fu)
+    : fy_(fy),
+      Material(name, youngsModulus, thermalExpansion, poissonRatio),
+      fu_(fu)
 {
 }

@@ -1,4 +1,5 @@
 #include <map>
+#include <optional>
 #include <stdexcept>
 
 #include "core/Analysis.h"
@@ -58,10 +59,12 @@ const char *ConcreteSection::state()
     return state_;
 };
 
-void ConcreteSection::updateState(float M, float N) {
+void ConcreteSection::updateState(float M, float N)
+{
     // TODO
     // run Uncracked Analysis
     // Check status and stresses
+    (*this).uncracked_ = Uncracked(props_, M, N);
 };
 
 float ConcreteSection::calculateRf()

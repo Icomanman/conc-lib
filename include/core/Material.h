@@ -21,24 +21,24 @@ struct ConcreteProps
 class Material
 {
 public:
-    Material(const char *name, float youngModulus, float thermalExpansion, float poissonRatio);
+    Material(const char *name, const float youngsModulus, const float thermalExpansion, const float poissonRatio);
 
-    float modulus();
-    float poisonRatio();
-    float thermalExpansion();
+    const float modulus();
+    const float poisonRatio();
+    const float thermalExpansion();
     const char *getName();
 
-protected:
-    const char *name;
-    float cThExp;
-    float E;
-    float poisson;
+private:
+    const char *name_;
+    const float cThExp_;
+    const float E_;
+    const float poisson_;
 };
 
 class Concrete : public Material
 {
 public:
-    Concrete(const char *name, float fc, float youngModulus, float thermalExpansion, float poissonRatio);
+    Concrete(const float fc, const char *name, const float youngsModulus, const float thermalExpansion, const float poissonRatio);
 
     const float fc();
     const ConcreteProps misc();
@@ -46,14 +46,14 @@ public:
     void setMisc(const ConcreteProps &props);
 
 private:
-    float fc_;
+    const float fc_;
     ConcreteProps misc_;
 };
 
 class Steel : public Material
 {
 public:
-    Steel(const char *name, float fy, float youngModulus, float thermalExpansion, float poissonRatio, float fu = 600.0);
+    Steel(const float fy, const char *name, const float youngsModulus, const float thermalExpansion, const float poissonRatio, const float fu = 600.0);
 
     const float fy();
     const float fu();
