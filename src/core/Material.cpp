@@ -36,19 +36,14 @@ Concrete::Concrete(const float fc, const char *name, const float youngsModulus, 
 {
 }
 
-void Concrete::setMisc(const ConcreteProps &props)
-{
-    misc_ = props;
-}
-
-const ConcreteProps Concrete::misc()
-{
-    return misc_;
-};
-
 const float Concrete::fc()
 {
     return fc_;
+}
+
+void Concrete::setMisc(const ConcreteProps &props)
+{
+    misc_ = props;
 }
 
 Steel::Steel(const float fy, const char *name, const float youngsModulus, const float thermalExpansion, const float poissonRatio, const float fu)
@@ -56,4 +51,14 @@ Steel::Steel(const float fy, const char *name, const float youngsModulus, const 
       Material(name, youngsModulus, thermalExpansion, poissonRatio),
       fu_(fu)
 {
+}
+
+const float Steel::fy()
+{
+    return fy_;
+}
+
+const float Steel::fu()
+{
+    return fu_;
 }

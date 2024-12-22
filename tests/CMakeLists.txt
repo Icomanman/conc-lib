@@ -35,7 +35,8 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 # Add test executable
 add_executable(initTest
-${CMAKE_CURRENT_SOURCE_DIR}/core_tests.cpp  # Add your test files here
+${CMAKE_CURRENT_SOURCE_DIR}/materials.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/section.cpp
 )
 
 target_include_directories(initTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)

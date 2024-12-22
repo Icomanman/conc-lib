@@ -1,12 +1,5 @@
 #pragma once
 
-struct MaterialProps
-{
-    float cThExp;
-    float E;
-    float poisson;
-};
-
 struct ConcreteProps
 {
     int t0 = 28;                     // 28 days
@@ -15,7 +8,7 @@ struct ConcreteProps
     float T1 = 20; // 20 degrees Celsius
     float T2 = 30; // 30 degrees Celsius
     float R1 = 0.5;
-    float R2 = 0.5;
+    float R2 = 0.4;
 };
 
 class Material
