@@ -1,22 +1,14 @@
+#include <map>
+#include <stdexcept>
+
 #include "core/Analysis.h"
 #include "core/Material.h"
 #include "core/Properties.h"
 #include "core/Rebar.h"
 #include "core/Section.h"
-#include <map>
 
 Section::Section() {
 };
-
-// const bool Section::compressionTop()
-// {
-//     return compressionTop_;
-// };
-
-// void Section::updateCompressionTop(bool compressionTop)
-// {
-//     compressionTop_ = compressionTop;
-// };
 
 ConcreteSection::ConcreteSection(const Concrete &concrete, const props &propSet, const std::map<const char *, Rebar *> &rebars)
     : concrete_(concrete), props_(propSet), rebars_(rebars) {
@@ -24,12 +16,26 @@ ConcreteSection::ConcreteSection(const Concrete &concrete, const props &propSet,
 
 const Uncracked &ConcreteSection::uncracked()
 {
-    return uncracked_;
+    if (uncracked_.has_value())
+    {
+        return *uncracked_;
+    }
+    else
+    {
+        throw std::runtime_error("Uncracked analysis not available");
+    }
 };
 
 const Cracked &ConcreteSection::cracked()
 {
-    return cracked_;
+    if (cracked_.has_value())
+    {
+        return *cracked_;
+    }
+    else
+    {
+        throw std::runtime_error("Cracked analysis not available");
+    }
 };
 
 const Concrete &ConcreteSection::concrete()

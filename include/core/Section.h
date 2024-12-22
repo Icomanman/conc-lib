@@ -1,5 +1,8 @@
 #pragma once
+
 #include <map>
+#include <optional>
+
 #include "Analysis.h"
 #include "Material.h"
 #include "Properties.h"
@@ -9,12 +12,6 @@ class Section
 {
 public:
     Section();
-
-    // const bool compressionTop();
-    // void updateCompressionTop(bool compressionTop);
-
-    // private:
-    //     bool compressionTop_;
 };
 
 class ConcreteSection : public Section
@@ -34,8 +31,8 @@ public:
     void updateState(float M, float N);
 
 private:
-    Uncracked uncracked_;
-    Cracked cracked_;
+    std::optional<Uncracked> uncracked_;
+    std::optional<Cracked> cracked_;
 
     Concrete concrete_;
     props props_;

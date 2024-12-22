@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+
 #include "core/Analysis.h"
 #include "core/Properties.h"
 
@@ -16,13 +17,10 @@ void Analysis::updateCompressionTop(bool compressionTop)
     compressionTop_ = compressionTop;
 };
 
-Uncracked::Uncracked()
+Uncracked::Uncracked(const props &propSet, const float M, const float N)
 {
     static const char *Stype = "Compressive_only";
-};
 
-Uncracked &Uncracked::run(const props &propSet, const float M, const float N)
-{
     bool fgExtremeCompTop;
     float Acg, A1, B1, Y1, y01, yb1, I1, Mcg1, ys1, fcb1, fct1, fsb1, fst1, et1, eb1, g1, C1;
     float d = propSet.h - propSet.db; // mm, dist from top to rebar
@@ -79,21 +77,12 @@ Uncracked &Uncracked::run(const props &propSet, const float M, const float N)
     this->etop = et1;
     this->ebot = eb1;
     this->g = g1;
-    this->Stype = "Compressive_only";
-
-    // update state
-    (*this).updateCompressionTop(fgExtremeCompTop);
-    return *this;
 };
 
-Cracked::Cracked()
+Cracked::Cracked(const props &propSet, const float M, const float N, const bool compressionTop)
 {
-
     static const char *Stype = "Cracked_with_compression";
-};
 
-Cracked &Cracked::run(const props &propSet, const float M, const float N, const bool compressionTop)
-{
     float Acg2, A2, B2, Y2, y02, yna2, I2, Mcg2, ys2, fna2, fct2, fcb2, fsb2, fst2, est2, esb2, g2, eb2, et2, fsMax2;
     float d = compressionTop ? (propSet.h - propSet.db) : (propSet.h - propSet.dt);
 
@@ -105,7 +94,8 @@ Cracked &Cracked::run(const props &propSet, const float M, const float N, const 
 
     PureTension *pt = nullptr;
     if (compressionTop)
-    { // compression in top fibre. C defined from top
+    {
+        // compression in top fibre. C defined from top
         for (int i = 0; i < 21; ++i)
         {
             // modular ratio for transformed area to be adjusted (deduction of concrete area)
@@ -130,11 +120,11 @@ Cracked &Cracked::run(const props &propSet, const float M, const float N, const 
             // much of this calcs can be refactored into helper function
             Acg2 = propSet.b * C2;
             A2 = Acg2 - propSet.Ad + nb * propSet.Asb + nt * propSet.Ast;
-            B2 = Acg2 * C2 / 2 - propSet.Ad * propSet.h / 4 + nb * propSet.Asb * propSet.d + nt * propSet.Ast * propSet.dt;
+            B2 = Acg2 * C2 / 2 - propSet.Ad * propSet.h / 4 + nb * propSet.Asb * d + nt * propSet.Ast * propSet.dt;
             Y2 = B2 / A2;
             y02 = propSet.h / 2 - Y2;
             yna2 = C2 - Y2;
-            I2 = propSet.b * pow(Y2, 3) / 3 + propSet.b * pow(yna2, 3) / 3 + nt * propSet.Ast * pow(Y2 - propSet.dt, 2) + nb * propSet.Asb * pow(propSet.d - Y2, 2) - propSet.Ad * pow(Y2 - propSet.h / 4, 2);
+            I2 = propSet.b * pow(Y2, 3) / 3 + propSet.b * pow(yna2, 3) / 3 + nt * propSet.Ast * pow(Y2 - propSet.dt, 2) + nb * propSet.Asb * pow(d - Y2, 2) - propSet.Ad * pow(Y2 - propSet.h / 4, 2);
             Mcg2 = M + N * (y02 / 1000);
             fna2 = (N * 1000) / A2 + (Mcg2 * 1e6) / I2 * yna2;
             if (fna2 > 0)
@@ -191,16 +181,17 @@ Cracked &Cracked::run(const props &propSet, const float M, const float N, const 
                 }
             }
 
-            this->Acg2 = propSet.b * C2;
-            this->A2 = this->Acg2 + nb * propSet.Asb + nt * propSet.Ast;
-            this->B2 = this->Acg2 * C2 / 2 + nb * propSet.Asb * propSet.db + nt * propSet.Ast * d_bott; // ref bottom
-            this->Y2 = this->B2 / this->A2;                                                             // dist from bottom to CG
-            this->y02 = propSet.h / 2 - this->Y2;
-            this->yna2 = C2 - this->Y2;
-            this->I2 = propSet.b * pow(this->Y2, 3) / 3 + propSet.b * pow(this->yna2, 3) / 3 + nt * propSet.Ast * pow(d_bott - this->Y2, 2) + nb * propSet.Asb * pow(this->Y2 - propSet.db, 2);
-            this->Mcg2 = M - N * (this->y02 / 1000);
-            this->fna2 = (N * 1000) / this->A2 + (-this->Mcg2 * 1e6) / this->I2 * this->yna2;
-            if (this->fna2 > 0)
+            Acg2 = propSet.b * C2;
+            A2 = Acg2 + nb * propSet.Asb + nt * propSet.Ast;
+            B2 = Acg2 * C2 / 2 + nb * propSet.Asb * propSet.db + nt * propSet.Ast * d_bott; // ref bottom
+            Y2 = B2 / A2;                                                                   // dist from bottom to CG
+            y02 = propSet.h / 2 - Y2;
+            yna2 = C2 - Y2;
+            I2 = propSet.b * pow(Y2, 3) / 3 + propSet.b * pow(yna2, 3) / 3 + nt * propSet.Ast * pow(d_bott - Y2, 2) + nb * propSet.Asb * pow(Y2 - propSet.db, 2);
+            Mcg2 = M - N * (y02 / 1000);
+            fna2 = (N * 1000) / A2 + (-Mcg2 * 1e6) / I2 * yna2;
+
+            if (fna2 > 0)
             {
                 C2 = C2 - C2inc;
             }
@@ -208,33 +199,31 @@ Cracked &Cracked::run(const props &propSet, const float M, const float N, const 
             {
                 C2 = C2 + C2inc;
             }
-
             C2inc = C2inc / 2;
         }
 
-        this->C2 = C2;
         // MPa, concrete stress at bottom fibre
-        this->fcb2 = N * 1000 / this->A2 + this->Mcg2 * 1e6 / this->I2 * this->Y2;
-        this->fct2 = 0;
-        this->ys2 = d_bott - this->Y2;
+        fcb2 = N * 1000 / A2 + Mcg2 * 1e6 / I2 * Y2;
+        fct2 = 0;
+        ys2 = d_bott - Y2;
 
         // MPa, stress in top rebar (tensile)
-        this->fst2 = propSet.ne * (N * 1000 / this->A2 - this->Mcg2 * 1e6 / this->I2 * this->ys2);
+        fst2 = propSet.ne() * (N * 1000 / A2 - Mcg2 * 1e6 / I2 * ys2);
         // MPa, stress in bottom rebar (tensile or compressive)
-        this->fsb2 = propSet.ne * (N * 1000 / this->A2 + this->Mcg2 * 1e6 / this->I2 * (this->Y2 - propSet.db));
+        fsb2 = propSet.ne() * (N * 1000 / A2 + Mcg2 * 1e6 / I2 * (Y2 - propSet.db));
         // strain at top rebar
-        this->est2 = this->fst2 / (propSet.Es * 1e3);
+        est2 = fst2 / (propSet.Es * 1e3);
         // strain at bottom rebar
-        this->esb2 = this->fsb2 / (propSet.Es * 1e3);
+        esb2 = fsb2 / (propSet.Es * 1e3);
         // slope of strain diagram: delta strain over dist between rebar
-        this->g2 = (this->esb2 - this->est2) / (propSet.d - propSet.db);
-        this->et2 = this->est2 - this->g2 * propSet.dt; // apparent surface strain, top
-        this->eb2 = this->esb2 + this->g2 * propSet.db; // apparent surface strain, bottom
+        g2 = (esb2 - est2) / (d_bott - propSet.db);
+        et2 = est2 - g2 * propSet.dt; // apparent surface strain, top
+        eb2 = esb2 + g2 * propSet.db; // apparent surface strain, bottom
         // check for non-convergence
-        this->fsMax2 = this->fst2;
-        if (abs(this->fna2) > 0.0001 || propSet.fgMonoBarTie)
+        fsMax2 = fst2;
+        if (abs(fna2) > 0.0001)
         {
-            state3 = new State3(M, N, propSet);
+            PureTension pt(propSet, M, N, compressionTop);
         }
     }
 
@@ -253,25 +242,19 @@ Cracked &Cracked::run(const props &propSet, const float M, const float N, const 
     else
     {
         this->C = C2;
-        this->fctop = this->fct2;
-        this->fcbot = this->fcb2;
-        this->fstop = this->fst2;
-        this->fsbot = this->fsb2;
-        this->etop = this->et2;
-        this->ebot = this->eb2;
-        this->g = this->g2;
+        this->fctop = fct2;
+        this->fcbot = fcb2;
+        this->fstop = fst2;
+        this->fsbot = fsb2;
+        this->etop = et2;
+        this->ebot = eb2;
+        this->g = g2;
         this->Stype = "Cracked";
     }
-    return *this;
 };
 
-PureTension::PureTension()
+PureTension::PureTension(const props &propSet, const float M, const float N, const bool compressionTop)
 {
     static const char *Stype = "Tensile_only";
+    // this->run(propSet, M, N, compressionTop);
 };
-
-PureTension &PureTension::run(const props &propSet, const float M, const float N, const bool compressionTop)
-{
-    // TODO
-    return *this;
-}
