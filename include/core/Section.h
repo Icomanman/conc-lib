@@ -8,6 +8,14 @@
 #include "Properties.h"
 #include "Rebar.h"
 
+enum SectionState
+{
+    UNINITIALISED,
+    UNCRACKED,
+    CRACKED,
+    PURETENSION
+};
+
 class Section
 {
 public:
@@ -25,7 +33,12 @@ public:
     const Concrete &concrete();
     const props getProps();
     const std::map<const char *, Rebar *> rebars();
-    const char *state();
+    // const char *state();
+    const SectionState state();
+
+    const bool inTension();
+    const bool fctmExceeded();
+    const bool fctminExceeded();
 
     float calculateRf();
     void updateState(float M, float N);
@@ -38,11 +51,14 @@ private:
     props props_;
     std::map<const char *, Rebar *> rebars_;
 
-    const char *state_ = "uninitialized";
+    // char *state_ = "uninitialized";
+    SectionState state_ = UNINITIALISED;
     float d_;
     float n_;
     float n1_;
-    bool inTension_;
+    bool inTension_ = false;
+    bool fctmExceeded_ = false;
+    bool fctminExceeded_ = false;
 
     double crackingMoment();
 };

@@ -54,25 +54,49 @@ const std::map<const char *, Rebar *> ConcreteSection::rebars()
     return rebars_;
 };
 
-const char *ConcreteSection::state()
+// const char *ConcreteSection::state()
+const SectionState ConcreteSection::state()
 {
     return state_;
 };
 
+const bool ConcreteSection::inTension()
+{
+    return inTension_;
+};
+
+const bool ConcreteSection::fctmExceeded()
+{
+    return fctmExceeded_;
+};
+
+const bool ConcreteSection::fctminExceeded()
+{
+    return fctminExceeded_;
+};
+
 void ConcreteSection::updateState(float M, float N)
 {
-    // TODO
-    // run Uncracked Analysis
     // Check status and stresses
-    (*this).uncracked_ = Uncracked(props_, M, N);
-};
+
+    // run Uncracked Analysis
+    // (*this).uncracked_ = Uncracked(props_, M, N);
+    this->uncracked_ = Uncracked(props_, M, N);
+
+    if (this->uncracked().fcbot > 0 || this->uncracked().fctop > 0)
+    {
+        this->state_ = SectionState::CRACKED;
+
+        // TODO: set the fctm and fct5 boolean flags: 10 January 2025
+    }
+}
 
 float ConcreteSection::calculateRf()
 {
     float fs;
     double I2;
     // Calculate Rf
-    if (this->state() == "Uncracked")
+    if (this->state() == SectionState::UNCRACKED)
     {
         // Uncracked state
         fs = 0.0;
