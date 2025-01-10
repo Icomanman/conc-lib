@@ -34,17 +34,12 @@ public:
     Concrete(const float fc, const char *name, const float youngsModulus, const float thermalExpansion, const float poissonRatio);
 
     const float fc();
-    const float fctm();
-    const float fct5();
     const ConcreteProps misc();
 
     void setMisc(const ConcreteProps &props);
 
 private:
     const float fc_;
-    // Think where you want to put these: 10 January 2025
-    // const float fctm_;
-    // const float fct5_;
     ConcreteProps misc_;
 };
 

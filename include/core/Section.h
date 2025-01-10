@@ -26,12 +26,12 @@ class ConcreteSection : public Section
 {
 
 public:
-    ConcreteSection(const Concrete &concrete, const props &propSet, const std::map<const char *, Rebar *> &rebars);
+    ConcreteSection(const Concrete &concrete, const concreteSectionProps &propSet, const std::map<const char *, Rebar *> &rebars);
 
     const Uncracked &uncracked();
     const Cracked &cracked();
     const Concrete &concrete();
-    const props getProps();
+    const concreteSectionProps getProps();
     const std::map<const char *, Rebar *> rebars();
     // const char *state();
     const SectionState state();
@@ -48,7 +48,7 @@ private:
     std::optional<Cracked> cracked_;
 
     Concrete concrete_;
-    props props_;
+    concreteSectionProps props_;
     std::map<const char *, Rebar *> rebars_;
 
     // char *state_ = "uninitialized";

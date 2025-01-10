@@ -1,5 +1,4 @@
 #pragma once
-#include "Material.h"
 
 struct sectionProps
 {
@@ -7,7 +6,7 @@ struct sectionProps
     double Ig = 0.0;
 };
 
-struct props : sectionProps
+struct concreteSectionProps : sectionProps
 {
     bool compressionTop = false;
     float Ast = 0.0;
@@ -19,6 +18,8 @@ struct props : sectionProps
     float Ec = 0.0;
     float Es = 0.0;
     float h = 0.0;
+    float fctm = 0.0;
+    float fct5 = 0.0;
 
     float ne() const
     {

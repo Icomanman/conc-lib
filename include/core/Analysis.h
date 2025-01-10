@@ -26,19 +26,19 @@ class Uncracked : public Analysis
 {
 public:
     static const char *Stype;
-    Uncracked(const props &propSet, const float M, const float N);
+    Uncracked(const concreteSectionProps &propSet, const float M, const float N);
 };
 
 class Cracked : public Analysis
 {
 public:
     static const char *Stype;
-    Cracked(const props &propSet, const float M, const float N, const bool compressionTop);
+    Cracked(const concreteSectionProps &propSet, const float M, const float N, const bool compressionTop);
 };
 
 class PureTension : public Analysis
 {
 public:
     static const char *Stype;
-    PureTension(const props &propSet, const float M, const float N, const bool compressionTop);
+    PureTension(const concreteSectionProps &propSet, const float M, const float N, const bool compressionTop);
 };

@@ -4,7 +4,7 @@
 #include "core/Rebar.h"
 #include "core/Section.h"
 
-TEST(ConcreteTest, Constructor)
+TEST(ConcreteMaterial, Constructor)
 {
     const int fc = 30;
     const int Ec = 30000;
@@ -20,7 +20,7 @@ TEST(ConcreteTest, Constructor)
     EXPECT_EQ(concrete.getName(), concreteName);
 };
 
-TEST(SteelTest, Constructor)
+TEST(SteelMaterial, Constructor)
 {
     const float fy = 414;
     const float fu = 600;

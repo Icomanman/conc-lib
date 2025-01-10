@@ -17,10 +17,9 @@ void Analysis::updateCompressionTop(bool compressionTop)
     compressionTop_ = compressionTop;
 };
 
-Uncracked::Uncracked(const props &propSet, const float M, const float N)
+const char *Uncracked::Stype = "Compressive_only";
+Uncracked::Uncracked(const concreteSectionProps &propSet, const float M, const float N)
 {
-    static const char *Stype = "Compressive_only";
-
     bool fgExtremeCompTop;
     float Acg, A1, B1, Y1, y01, yb1, I1, Mcg1, ys1, fcb1, fct1, fsb1, fst1, et1, eb1, g1, C1;
     float d = propSet.h - propSet.db; // mm, dist from top to rebar
@@ -79,10 +78,9 @@ Uncracked::Uncracked(const props &propSet, const float M, const float N)
     this->g = g1;
 };
 
-Cracked::Cracked(const props &propSet, const float M, const float N, const bool compressionTop)
+const char *Cracked::Stype = "Cracked_with_compression";
+Cracked::Cracked(const concreteSectionProps &propSet, const float M, const float N, const bool compressionTop)
 {
-    static const char *Stype = "Cracked_with_compression";
-
     float Acg2, A2, B2, Y2, y02, yna2, I2, Mcg2, ys2, fna2, fct2, fcb2, fsb2, fst2, est2, esb2, g2, eb2, et2, fsMax2;
     float d = compressionTop ? (propSet.h - propSet.db) : (propSet.h - propSet.dt);
 
@@ -253,8 +251,7 @@ Cracked::Cracked(const props &propSet, const float M, const float N, const bool 
     }
 };
 
-PureTension::PureTension(const props &propSet, const float M, const float N, const bool compressionTop)
-{
-    static const char *Stype = "Tensile_only";
+const char *PureTension::Stype = "Tensile_only";
+PureTension::PureTension(const concreteSectionProps &propSet, const float M, const float N, const bool compressionTop) {
     // this->run(propSet, M, N, compressionTop);
 };

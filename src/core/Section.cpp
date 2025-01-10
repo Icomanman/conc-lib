@@ -11,7 +11,7 @@
 Section::Section() {
 };
 
-ConcreteSection::ConcreteSection(const Concrete &concrete, const props &propSet, const std::map<const char *, Rebar *> &rebars)
+ConcreteSection::ConcreteSection(const Concrete &concrete, const concreteSectionProps &propSet, const std::map<const char *, Rebar *> &rebars)
     : concrete_(concrete), props_(propSet), rebars_(rebars) {
       };
 
@@ -44,7 +44,7 @@ const Concrete &ConcreteSection::concrete()
     return concrete_;
 };
 
-const props ConcreteSection::getProps()
+const concreteSectionProps ConcreteSection::getProps()
 {
     return props_;
 };

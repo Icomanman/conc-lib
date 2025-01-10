@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "core/Material.h"
 #include "core/Rebar.h"
 
@@ -13,9 +15,9 @@ Rebar::Rebar(const Steel &steel, float diameter, float spacing, const char *laye
 {
 }
 
-float Rebar::calcArea()
+float Rebar::calcArea(float b)
 {
-    return 3.14159 * diameter * diameter / 4;
+    return 0.25 * PI * pow(diameter, 2) * b / spacing;
 }
 
 float Rebar::calcDepth()
