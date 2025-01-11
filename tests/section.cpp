@@ -8,30 +8,52 @@
 #include "core/Rebar.h"
 #include "core/Section.h"
 
+#include "utils/conc_utils.h"
+
 class SectionTest : public ::testing::Test
 {
+private:
+    float cc_, Ecm_, fcm_, fctm28_, fctm_, fct5_, t_;
+    ConcreteProps misc_;
+
 protected:
-    const int fc = 30;
+    const float fc = 30.2;
+    const float fcu = 37.0;
     const float Ec = 30000;
     const float cThexp = 0.000011;
     const float v = 0.17;
     const char *concreteName = "fc30";
     const float diameter = 20;
     const float spacing = 100;
-    const float b = 300;
-    const float h = 600;
+    const float b = 1000;
+    const float h = 450;
 
     Concrete fc30;
-    Steel fy414;
+    Steel fy500;
     Rebar rebar;
     concreteSectionProps props;
     std::map<const char *, Rebar *> rebarMap;
 
+    float Eceff_;
+
     SectionTest() : fc30(fc, concreteName, Ec, cThexp, v),
-                    fy414(414, "fy414", 200000, 0.000012, 0.3),
-                    rebar(fy414, diameter, spacing, "bottom")
+                    fy500(500, "fy500", 198000, 0.000012, 0.3),
+                    rebar(fy500, diameter, spacing, "bottom")
     {
         rebarMap = {{"bottom", &rebar}};
+
+        misc_ = fc30.misc();
+
+        cc_ = misc_.creepCoefficient;
+        t_ = misc_.t0;
+
+        fcm_ = conc_utils::fcyl_to_fcm(fc);
+        fctm28_ = conc_utils::fcyl_to_fctm(fc, fcm_);
+        fctm_ = conc_utils::fcm_t(fctm28_, t_);
+        fct5_ = conc_utils::fctm_to_fct5(fctm_);
+
+        Ecm_ = conc_utils::fcm_to_Ecm(fcm_);
+        Eceff_ = conc_utils::ecm_to_eceff(Ecm_, cc_);
 
         props = {
             .compressionTop = false,
@@ -40,11 +62,11 @@ protected:
             .b = b,
             .db = diameter,
             .dt = diameter,
-            .Ec = fc30.modulus(),
-            .Es = fy414.modulus(),
+            .Ec = Ecm_,
+            .Es = fy500.modulus(),
             .h = h,
-            .fctm = fc30.fc(),
-            .fct5 = fc30.fc(),
+            .fctm = fctm_,
+            .fct5 = fct5_,
         };
 
         props.Ag = b * h;
@@ -59,5 +81,9 @@ TEST_F(SectionTest, Constructor)
 
 TEST_F(SectionTest, Props_struct)
 {
-    printf("Ast: %f\n", props.Ast);
+    printf("fc: %f\n", fc);
+    printf("fctm: %f\n", props.fctm);
+    printf("fct5: %f\n", props.fct5);
+    printf("Ecm: %f\n", props.Ec);
+    printf("Eceff: %f\n", Eceff_);
 };

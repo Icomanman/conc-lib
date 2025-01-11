@@ -41,6 +41,11 @@ const float Concrete::fc()
     return fc_;
 }
 
+const ConcreteProps Concrete::misc()
+{
+    return misc_;
+}
+
 void Concrete::setMisc(const ConcreteProps &props)
 {
     misc_ = props;

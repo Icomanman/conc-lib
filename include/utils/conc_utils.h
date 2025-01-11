@@ -2,96 +2,75 @@
 
 namespace conc_utils
 {
-    const float FCK_CONSTANT = 0.816;
-    inline float fctm(const float fc)
+    const float ZERO = 0.000001;
+    const float FCK_CONSTANT = 0.816; // cube to cylinder strength conversion factor
+
+    inline float fcu_to_fcyl(const float fcu)
     {
-        return 0.3;
+        return FCK_CONSTANT * fcu;
     }
 
-    inline float fct5(const float fc)
+    inline float fcyl_to_fcm(const float fcyl)
     {
-        return 0.3;
+        return fcyl + 8.0;
+    }
+
+    inline float fcm_to_Ecm(const float fcm)
+    {
+        return 22.0 * pow(0.10 * fcm, 0.3);
+    }
+
+    inline float fcyl_to_fctm(const float fcyl, const float fcm)
+    {
+        if (fcyl <= 50)
+        {
+            const float exp_ = 2.0 / 3.0;
+            return 0.30 * pow(fcyl, exp_);
+        }
+        else
+        {
+            return 2.12 * log(1 + (0.10 * fcm));
+        }
+    }
+
+    inline float bcc_t(const float s, const float t)
+    {
+        // EC2 coefficient which depends on the age of concrete
+        const float t_ = t < ZERO ? ZERO : t;
+        return exp(s * (1 - pow(28 / t_, 0.5)));
+    }
+
+    inline float fcm_t(const float fctm, const float t)
+    {
+        // mean compressive strength at age t in days
+        // s, coefficient which depends on the type of cement: s = 0.25 for normal and rapid hardening
+        const float s = 0.25;
+        const float bcct = bcc_t(s, t);
+        return bcct * fctm;
+    }
+
+    inline float const fctm_to_fct5(const float fctm)
+    {
+        // EC2, 5th fractile
+        return 0.7 * fctm;
+    }
+
+    inline float const ecm_to_eceff(const float ecm, const float cc)
+    {
+        // EC2
+        // cc, creep coefficient
+        return ecm / (1 + cc);
+    }
+
+    inline float ecm_t(const float fcm_3, const float fcm, const float Ecm)
+    {
+        // returns modulus of elasticity at age t in days
+        return Ecm * pow(fcm_3 / fcm, 0.3);
+    }
+
+    inline float fck_to_fcu(const float fck)
+    {
+        // convert mean strength to cube strength
+        return fck / FCK_CONSTANT;
     }
 }
-
-/*
-
-def fcu_to_fck_cyl(fcu) -> float:
-    # convert cube strength to cylinder strength
-    return FCK_CONSTANT * fcu
-
-
-# **************************************************
-# These functions are from direct conversion from VB
-# **************************************************
-def fck_to_fcm(fck) -> float:
-    # EC2
-    # convert 5th perc characteristic to mean
-    return fck + 8
-
-
-def fcm_to_Ecm(fcm) -> float:
-    # EC2
-    # get mean modulus of concrete from mean compressive cylinder strength
-    return 22 * (fcm / 10) ** 0.3
-
-
-def fck_to_fctm(fck, fcm) -> float:
-    # EC2
-    if fck <= 50:
-        return 0.3 * fck ** (2 / 3)
-    else:
-        return 2.12 * math.log(1 + (fcm / 10))
-
-
-def fctm_t(fctm, t) -> float:
-    # returns fct,eff at age t in days.
-    # use t = t0 = age at first loading
-    bcct = Bcc_t(0.25, t)
-    if t < 28:
-        a = 1
-    else:
-        a = 0.66667
-    return bcct ** a * fctm
-
-
-def Bcc_t(s, t) -> float:
-    # returns coefficient which depends on age of concrete
-    # t=age of concrete in days
-    # s=coefficient which depends on type of cement: s=0.25 for normal and rapid hardening
-    # ref EC2 3.1.2
-
-    # e ^ x
-    # patch: 21 Nov 2024
-    t: float = max(t, ZERO)
-    return math.exp(s * (1 - (28 / t) ** 0.5))
-
-
-def fcm_t(fcm, t) -> float:
-    # returns mean compressive strength at age t in days
-    bcct = Bcc_t(0.25, t)
-    return bcct * fcm
-
-
-def fctm_to_fct5(fctm) -> float:
-    # EC2
-    # 5th fractile
-    return 0.7 * fctm
-
-
-def Ecm_to_Eceff(Ecm, CC) -> float:
-    # EC2
-    return Ecm / (1 + CC)
-
-
-# MISSING FUNCTION FROM VB.NET
-def Ecm_t(fcm_3, fcm, Ecm) -> float:
-    # returns modulus of elasticity at age t in days
-    return Ecm * (fcm_3 / fcm) ** 0.3
-
-
-def fck_to_fcu(fck) -> float:
-    # convert mean strength to cube strength
-    return fck / FCK_CONSTANT
-
-*/
